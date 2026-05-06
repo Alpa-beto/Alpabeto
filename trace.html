@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Traceable Letters - Kids Tracing</title>
+<style>
+* { box-sizing: border-box; }
+body {
+    font-family: "Century Gothic", Arial, sans-serif;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #FFFBFB 0%, #F7FDFF 40%, #FFFDF2 70%);
+    overflow: hidden;
+    position: relative;
+}
+
+/* Header & Footer */
+header, footer {
+    background: linear-gradient(135deg, #FFDEE9, #B5FFFC, #FFF6B7, #FFB3BA);
+    background-size: 800% 800%;
+    animation: gradientAnim 20s ease infinite;
+    padding: 12px 18px;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+footer { border-top: 3px solid #ccc; margin-top: auto; }
+
+@keyframes gradientAnim {
+    0% { background-position: 0% 50%; }
+    25% { background-position: 50% 100%; }
+    50% { background-position: 100% 50%; }
+    75% { background-position: 50% 0%; }
+    100% { background-position: 0% 50%; }
+}
+header img { width: 50px; cursor: pointer; }
+
+.header-nav { position: sticky; top: 12px; z-index: 1000; display:flex; align-items:center; padding:10px 18px; gap:12px; }
+/* Pen Controls */
+#headerControls {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-left: auto; /* push controls to right */
+}
+
+/* Header title */
+.site-title {
+    font-family: 'Fredoka One', 'Century Gothic', Arial, sans-serif;
+    font-size: 1.6rem;
+    color: #043748;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    margin: 0 auto;
+    pointer-events: none;
+    display: none; /* hide textual title per request */
+}
+.return-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative; /* now inside header flow */
+    margin-right: 12px;
+    width: 88px;
+    height: 88px;
+    background: #FF8DA1;
+    color: white;
+    font-size: 40px;
+    text-decoration: none;
+    border-radius: 24px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+    transition: transform 0.18s ease, background 0.18s;
+    border: 3px solid rgba(255,255,255,0.12);
+}
+.return-btn:hover { background: #FF6B8A; transform: scale(1.04); }
+
+/* Responsive header tweaks to avoid overlap on small screens */
+@media (max-width: 720px) {
+    .site-title { font-size: 1.05rem; margin: 0 24px; }
+    .return-btn { width: 64px; height: 64px; font-size: 28px; margin-right: 8px; }
+    #headerControls { gap: 8px; }
+    .size-dropdown select { min-width: 100px; font-size: 16px; padding: 10px 12px; }
+}
+
+@media (max-width: 420px) {
+    .site-title { font-size: 0.95rem; }
+    .return-btn { width: 54px; height: 54px; font-size: 22px; }
+    #headerControls { gap: 6px; }
+}
+
+/* Tools bar wrapper (keeps home button as-is, groups controls) */
+.tools-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.08);
+    padding: 8px;
+    border-radius: 12px;
+}
+.pen-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    margin-right: 6px;
+}
+.pen-icon svg { width: 22px; height: 22px; display: block; }
+
+/* place pen icon inside the select area */
+.size-dropdown { position: relative; display: flex; align-items: center; gap: 8px; }
+.size-dropdown .pen-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); margin-right: 0; pointer-events: none; opacity: 0.95; }
+.size-dropdown select { padding-left: 56px; padding-right: 28px; appearance: none; -webkit-appearance: none; cursor: pointer; z-index: 1; }
+.size-dropdown select { background: linear-gradient(135deg,#fff,#f6f9ff); border: 1px solid rgba(0,0,0,0.06); }
+.size-dropdown::after { content: '\25BC'; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-size: 12px; color: rgba(0,0,0,0.45); pointer-events: none; }
+
+/* make tools aligned to the right inside header */
+.tools-bar { margin-left: auto; }
+
+/* Header visual background when used with .header-nav */
+.header-bg {
+    width: 100%;
+    background: linear-gradient(135deg, rgba(255,222,233,0.95), rgba(181,255,252,0.95));
+    border-radius: 14px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+    padding: 6px 10px;
+}
+
+.size-label { display: none; }
+
+/* Buttons styling */
+button {
+    padding: 12px 18px;
+    border-radius: 12px;
+    border: 2px solid #fff;
+    font-weight: bold;
+    cursor: pointer;
+    color: white;
+    font-size: 18px;
+    transition: 0.2s;
+}
+button:hover { opacity: 0.8; }
+
+.colorBtn {
+    width: 50px; height: 50px;
+    border-radius: 50%;
+    border: 2px solid white;
+    cursor: pointer;
+}
+.colorBtn.red   { background: #ff4d6d; }
+.colorBtn.blue  { background: #4da6ff; }
+.colorBtn.black { background: #333; }
+.colorBtn.undo  { background: #fff; border: 2px solid #333; color: #333; font-weight: bold; font-size: 20px; }
+
+/* Undo button (square) */
+.undoBtn {
+    width: 56px; height: 56px;
+    border-radius: 12px;
+    background: #ffffff;
+    color: #333;
+    border: 2px solid rgba(0,0,0,0.12);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+}
+
+/* Eraser button */
+.eraserBtn {
+    width: 72px; height: 72px;
+    border-radius: 14px;
+    background: #f2f2f2;
+    color: #333;
+    border: 2px solid rgba(0,0,0,0.08);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+}
+.eraserBtn.active { box-shadow: 0 8px 18px rgba(0,0,0,0.22); background: #ffdede; }
+
+/* Size dropdown */
+.size-dropdown select {
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 2px solid rgba(255,255,255,0.6);
+    background: linear-gradient(135deg, #FFDEE9, #B5FFFC);
+    color: #333;
+    font-weight: bold;
+}
+
+/* Pen indicator */
+#penIndicator {
+    width: 44px; height: 44px; border-radius: 50%;
+    border: 3px solid rgba(255,255,255,0.6);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.12);
+    margin-left: 12px;
+}
+#penIndicator.eraser { background: linear-gradient(135deg,#fff0f0,#ffecec); display:flex; align-items:center; justify-content:center; font-size:20px; }
+
+/* Size dropdown focus/expanded aesthetics */
+.size-dropdown select:focus { outline: none; box-shadow: 0 8px 20px rgba(0,0,0,0.2); transform: translateY(-2px); }
+.size-dropdown select { min-width: 120px; font-size: 18px; padding: 12px 14px; }
+
+/* Pen indicator visual */
+#penIndicator { transition: background 0.12s, transform 0.12s, box-shadow 0.12s; border: 2px solid rgba(0,0,0,0.08); }
+
+/* Footer responsiveness */
+@media (max-width: 900px) {
+    .slider-container { gap: 24px; }
+    .preview-left { left: -80px; }
+    .preview-right { right: -80px; }
+}
+@media (max-width: 560px) {
+    .header-bg { padding: 8px; }
+    .return-btn { width: 64px; height: 64px; font-size: 28px; }
+    .tools-bar { gap: 8px; }
+    .size-dropdown select { min-width: 92px; font-size: 14px; padding: 8px 12px; padding-left: 44px; }
+    .letter-display { font-size: clamp(32px, 10vw, 48px); }
+    .preview-left, .preview-right { display: none; }
+}
+/* On-canvas cursor indicator that follows pointer */
+#cursorIndicator {
+    position: absolute;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.9);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.18);
+    transition: width 0.08s ease, height 0.08s ease, background 0.12s ease, transform 0.08s ease;
+    display: none;
+}
+#cursorIndicator.eraser { background: rgba(255,255,255,0.4); border: 2px dashed rgba(0,0,0,0.2); }
+/* utility */
+.visually-hidden { position: absolute !important; height: 1px; width: 1px; overflow: hidden; clip: rect(1px, 1px, 1px, 1px); white-space: nowrap; }
+
+/* Action buttons */
+.action-btn {
+    background: linear-gradient(135deg, #FFDEE9, #FFB3BA);
+    color: #333;
+    border: none;
+    font-size: 20px;
+    padding: 12px 18px;
+}
+
+/* Canvas */
+#traceCanvas {
+    display: block;
+    margin: 0 auto;
+    cursor: crosshair;
+    background: transparent;
+    z-index: 1;
+    position: relative;
+    width: 100%;
+    flex: 1 1 auto;
+}
+
+#canvasWrap { position: relative; width: 100%; display: flex; align-items: center; justify-content: center; }
+#userCanvas { position: absolute; left: 0; top: 0; z-index: 2; pointer-events: auto; }
+#traceCanvas { position: absolute; left: 0; top: 0; z-index: 1; pointer-events: none; }
+
+/* Ensure body layout keeps footer at bottom and main content fills available space */
+body { display: flex; flex-direction: column; }
+
+/* Responsive footer content */
+.slider-container { flex: 0 0 auto; }
+
+/* Slider */
+/* Footer / Slider overhaul */
+.footer-bar {
+    width: 100%;
+    padding: 8px 12px;
+    background: linear-gradient(135deg, #FFDEE9, #B5FFFC, #FFF6B7, #FFB3BA);
+    background-size: 800% 800%;
+    animation: gradientAnim 20s ease infinite;
+    box-shadow: 0 -6px 20px rgba(0,0,0,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.slider-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1 1 auto;
+    justify-content: center;
+    position: relative;
+}
+
+.arrow {
+    font-size: 38px;
+    cursor: pointer;
+    padding: 10px 14px;
+    border-radius: 12px;
+    transition: transform 0.15s ease, background 0.15s ease;
+    background: transparent;
+    color: #333;
+    user-select: none;
+}
+.arrow:hover { transform: translateY(-3px); background: rgba(0,0,0,0.04); }
+/* keep arrows a consistent size so the letter can center between them */
+.arrow { flex: 0 0 56px; display: inline-flex; align-items: center; justify-content: center; }
+
+.letter-display {
+    --big-size: clamp(48px, 9vw, 100px);
+    font-size: var(--big-size);
+    font-weight: 800;
+    display: inline-flex;
+    gap: 0.12em;
+    align-items: baseline; /* align by typographic baseline */
+    justify-content: center;
+    line-height: 1;
+    text-align: center;
+    font-family: 'Century Gothic', Arial, sans-serif; /* ensure consistent metrics */
+    color: #000; /* display text in black */
+    margin: 0 8px;
+    position: relative; /* for the pseudo-element underline */
+}
+.letter-display > span { display: inline-block; line-height: 1; vertical-align: baseline; }
+.letter-display > span:first-child { font-size: 1em; }
+.letter-display > span.small-letter {
+    font-size: 1em; /* same size as the capital for 'Aa' appearance */
+    margin-left: 0.08em; /* small gap to separate letters */
+    vertical-align: baseline;
+    align-self: baseline;
+    opacity: 0.98;
+}
+
+/* Single continuous underline for the full letter pair */
+/* underline removed per request */
+
+.preview-left, .preview-right {
+    font-size: clamp(18px, 3vw, 36px);
+    color: rgba(0,0,0,0.45);
+    font-weight: 700;
+    opacity: 0.9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 56px;
+    text-align: center;
+}
+
+.right-buttons {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+@media (max-width: 720px) {
+    .footer-bar { padding: 12px; }
+    .arrow { font-size: 34px; }
+    .letter-card { min-width: 160px; padding: 8px 12px; }
+}
+
+@media (max-width: 420px) {
+    .slider-area { gap: 10px; }
+    .arrow { font-size: 28px; padding: 8px; }
+    .letter-display { gap: 2px; }
+    .preview-left, .preview-right { display: none; }
+    .right-buttons { gap: 8px; }
+}
+
+</style>
+<style>
+/* All-letters zoom-out overlay */
+.all-grid-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(6,18,28,0.6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 200000;
+    padding: 28px;
+}
+.all-grid-overlay.open { display: flex; }
+.all-grid {
+    background: linear-gradient(135deg,#ffffff,#f8fbff);
+    border-radius: 12px;
+    padding: 18px;
+    max-width: 1100px;
+    width: 100%;
+    max-height: 86vh;
+    overflow: auto;
+    box-shadow: 0 20px 60px rgba(2,6,23,0.6);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+}
+.letter-tile {
+    background: #fff;
+    border-radius: 10px;
+    padding: 14px 10px;
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap:6px;
+    cursor: pointer;
+    border: 1px solid rgba(0,0,0,0.06);
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.letter-tile:hover { transform: translateY(-6px); box-shadow: 0 10px 30px rgba(0,0,0,0.12); }
+.letter-tile .big { font-size: 34px; font-weight: 800; }
+.letter-tile .small { font-size: 18px; opacity: 0.9; }
+.all-overlay-top { width:100%; display:flex; justify-content:flex-end; margin-bottom:8px; }
+.back-button { margin-left: 8px; }
+@media (max-width:420px){ .letter-tile .big { font-size: 22px } .letter-tile .small { font-size:14px } }
+</style>
+</style>
+</head>
+<body>
+
+<header class="header-nav">
+    <div class="header-bg" style="display:flex; align-items:center; width:100%;">
+        <a href="next.html" class="return-btn" aria-label="Return to Selection">🏠</a>
+
+        <h1 class="site-title">Trace Letters</h1>
+
+        <div class="tools-bar">
+            <div id="headerControls">
+        <button class="colorBtn red" data-color="red" aria-label="Red pen"></button>
+        <button class="colorBtn blue" data-color="blue" aria-label="Blue pen"></button>
+        <button class="colorBtn black" data-color="black" aria-label="Black pen"></button>
+
+        <button id="eraserBtn" class="eraserBtn" aria-pressed="false" title="Eraser" aria-label="Eraser">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <rect x="3" y="14" width="14" height="6" rx="1.5" fill="#e9e9e9" stroke="#cfcfcf"/>
+                <path d="M7 14l6-6 3 3-6 6" stroke="#9b9b9b" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </svg>
+        </button>
+        <button id="undoBtn" class="undoBtn" title="Undo">↺</button>
+
+        <div class="size-dropdown">
+            <span class="pen-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M3 21l3-1 12-12 1 1-12 12-1 3-3-3z" fill="#333"/>
+                    <path d="M20.7 6.3a1 1 0 0 0-1.4 0l-1.2 1.2 1.4 1.4 1.2-1.2a1 1 0 0 0 0-1.4z" fill="#ff4d6d"/>
+                </svg>
+            </span>
+            <select id="sizeSelect" aria-label="Pen size select">
+                <option value="4">Small</option>
+                <option value="8" selected>Medium</option>
+                <option value="14">Large</option>
+                <option value="24">XL</option>
+            </select>
+        </div>
+        <div id="penIndicator" aria-hidden="true" title="Current pen"></div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div id="canvasWrap">
+    <canvas id="traceCanvas"></canvas>
+    <canvas id="userCanvas"></canvas>
+    <div id="cursorIndicator" aria-hidden="true"></div>
+</div>
+
+<footer class="footer-bar">
+    <div class="slider-area">
+        <div class="preview-left" id="previewLeft"></div>
+        <button class="arrow" id="leftArrow" aria-label="Previous">&#9664;</button>
+
+        <div id="letter" class="letter-display"><span>I</span><span class="small-letter">i</span></div>
+
+        <button class="arrow" id="rightArrow" aria-label="Next">&#9654;</button>
+        <div class="preview-right" id="previewRight"></div>
+    </div>
+
+    <div class="right-buttons">
+        <button class="action-btn" id="clearBtn">Clear</button>
+        <button class="action-btn" id="saveBtn">Save</button>
+        <button class="action-btn" id="showAllBtn">Show All</button>
+    </div>
+</footer>
+
+<script>
+// Letters (full alphabet pairs)
+const letters = [
+    "Aa","Bb","Cc","Dd","Ee","Ff","Gg","Hh","Ii","Jj","Kk","Ll","Mm",
+    // N, then Ñ and Ng (Filipino alphabet additions), then O
+    "Nn","Ññ","Ngng","Oo","Pp","Qq","Rr","Ss","Tt","Uu","Vv","Ww","Xx","Yy","Zz"
+];
+let currentIndex = 0;
+
+// Canvases
+const canvas = document.getElementById("traceCanvas");
+const ctx = canvas.getContext("2d");
+const userCanvas = document.getElementById("userCanvas");
+const uctx = userCanvas.getContext("2d");
+
+// Pen
+let penColor = "red";
+let penSize = 12;
+let drawing = false;
+let isEraser = false;
+
+// Paths storage
+let userPaths = [];
+
+// Line Y positions
+const linesY = [120, 250, 380];
+
+// Resize
+// Resize the canvases to fill available space between header/footer
+// and recalculate guide line positions. Called on window resize.
+function resizeCanvas() {
+    // set canvas to fill available vertical space between header and footer
+    const headerH = document.querySelector('header') ? document.querySelector('header').offsetHeight : 0;
+    const footerH = document.querySelector('footer') ? document.querySelector('footer').offsetHeight : 0;
+    canvas.width = window.innerWidth;
+    const available = window.innerHeight - headerH - footerH - 24; // small padding
+    const h = Math.max(600, available);
+    canvas.height = h;
+    userCanvas.width = canvas.width;
+    userCanvas.height = canvas.height;
+    // coordinate adjustments for linesY based on new canvas height
+    // distribute three guide lines vertically (30%, 50%, 70%) to match visible thirds
+    linesY[0] = Math.floor(canvas.height * 0.30);
+    linesY[1] = Math.floor(canvas.height * 0.50);
+    linesY[2] = Math.floor(canvas.height * 0.70);
+
+    drawCanvas();
+}
+window.addEventListener("resize", resizeCanvas);
+resizeCanvas();
+
+// Draw lines
+// Draw the three guide lines (top/mid/bottom) on the guide canvas
+// with alternating colors for visual clarity.
+function drawLines() {
+    ctx.lineWidth = 4;
+    const colors = ["blue", "red", "blue"];
+    for (let i = 0; i < 3; i++) {
+        ctx.strokeStyle = colors[i];
+        ctx.beginPath();
+        ctx.moveTo(2, linesY[i]);
+        ctx.lineTo(canvas.width - 2, linesY[i]);
+        ctx.stroke();
+    }
+
+}
+
+// Draw trace letters onto background canvas only
+// Render the guide letters into each column.
+// Uses a uniform font size, handles spacing and draws a baseline under letters.
+function drawTraceLetters(letterPair) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.globalAlpha = 0.85;
+    ctx.fillStyle = "#2266CC";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    const big = letterPair.charAt(0) || letterPair;
+    const small = letterPair.charAt(1) || '';
+
+    // Combined text uses same size for both characters
+    const combined = big + (small ? small : '');
+
+    const availHeight = Math.max(40, linesY[2] - linesY[0]);
+    // allow a scale factor to enlarge guide letters (user-requested multiplier)
+    const guideScale = 1.25; // 1x size (no enlargement)
+    let fontSize = Math.floor(availHeight * 0.72 * guideScale);
+    const paddingH = 48;
+    const maxColWidth = Math.floor(canvas.width / 3) - paddingH;
+
+    ctx.font = `bold ${fontSize}px 'Century Gothic', Arial`;
+    // measure each character and add modest spacing for better legibility
+    const chars = combined.split('');
+    let measures = chars.map(ch => ctx.measureText(ch).width);
+    const gap = Math.max(6, Math.floor(fontSize * 0.05));
+    let totalWidth = measures.reduce((a, b) => a + b, 0) + gap * (chars.length - 1);
+
+    // ensure total width fits; shrink if necessary
+    while (totalWidth > maxColWidth && fontSize > 36) {
+        fontSize -= 2;
+        ctx.font = `bold ${fontSize}px 'Century Gothic', Arial`;
+        measures = chars.map(ch => ctx.measureText(ch).width);
+        totalWidth = measures.reduce((a, b) => a + b, 0) + gap * (chars.length - 1);
+    }
+
+    const centerY = Math.floor((linesY[0] + linesY[2]) / 2);
+    const cols = [canvas.width / 4, canvas.width / 2, (canvas.width * 3) / 4];
+
+    // draw a subtle rounded panel behind each column's letters for visual design
+    cols.forEach(x => {
+        const panelWidth = Math.min(maxColWidth, totalWidth + 64);
+        const panelHeight = Math.floor(availHeight * 1.15 * guideScale) + 32;
+        const panelX = Math.floor(x - panelWidth / 2);
+        const panelY = Math.floor(centerY - panelHeight / 2);
+
+        // soft filled rounded rect
+        ctx.save();
+        ctx.fillStyle = 'rgba(34,102,204,0.06)';
+        ctx.strokeStyle = 'rgba(34,102,204,0.10)';
+        roundRect(ctx, panelX, panelY, panelWidth, panelHeight, 18);
+        ctx.fill();
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        ctx.restore();
+
+        // draw letters on top
+        ctx.font = `bold ${fontSize}px 'Century Gothic', Arial`;
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+        let startX = x - totalWidth / 2;
+        for (let i = 0; i < chars.length; i++) {
+            ctx.fillText(chars[i], startX, centerY);
+            startX += measures[i] + gap;
+        }
+
+        // draw a subtle baseline slightly closer to the letters and a bit thinner
+        const baselineY = centerY + Math.floor(fontSize * 0.55);
+        ctx.strokeStyle = 'rgba(0,0,0,0.16)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(x - totalWidth / 2 - 12, baselineY);
+        ctx.lineTo(x + totalWidth / 2 + 12, baselineY);
+        ctx.stroke();
+    });
+
+    ctx.globalAlpha = 1.0;
+}
+
+// helper: draw rounded rectangle path (no fill/stroke by itself)
+function roundRect(ctx, x, y, w, h, r) {
+    const radius = Math.min(r, w / 2, h / 2);
+    ctx.beginPath();
+    ctx.moveTo(x + radius, y);
+    ctx.arcTo(x + w, y, x + w, y + h, radius);
+    ctx.arcTo(x + w, y + h, x, y + h, radius);
+    ctx.arcTo(x, y + h, x, y, radius);
+    ctx.arcTo(x, y, x + w, y, radius);
+    ctx.closePath();
+}
+
+        // Redraw both canvases: first the guide (ctx) then the user's strokes (uctx)
+        // Keeps the guide static while user strokes are composited on top.
+        function drawCanvas() {
+            // background guide
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawLines();
+            drawTraceLetters(letters[currentIndex]);
+
+            // user layer
+            uctx.clearRect(0, 0, userCanvas.width, userCanvas.height);
+            userPaths.forEach(path => {
+                if (!path.points || path.points.length === 0) return;
+                if (path.color === 'eraser') {
+                    uctx.globalCompositeOperation = 'destination-out';
+                    uctx.strokeStyle = 'rgba(0,0,0,1)';
+                } else {
+                    uctx.globalCompositeOperation = 'source-over';
+                    uctx.strokeStyle = path.color;
+                }
+                uctx.lineWidth = path.size;
+                uctx.lineCap = "round";
+                uctx.lineJoin = "round";
+                uctx.beginPath();
+                uctx.moveTo(path.points[0].x, path.points[0].y);
+                for (let i = 1; i < path.points.length; i++) {
+                    uctx.lineTo(path.points[i].x, path.points[i].y);
+                }
+                uctx.stroke();
+                uctx.globalCompositeOperation = 'source-over';
+            });
+        }
+
+// FAST drawing
+let currentPath = null;
+let lastPos = null;
+
+function getPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    return e.touches ?
+        { x: e.touches[0].clientX - rect.left, y: e.touches[0].clientY - rect.top } :
+        { x: e.clientX - rect.left, y: e.clientY - rect.top };
+}
+
+// Start a new drawing path. Called on mousedown/touchstart.
+function startDraw(e) {
+    drawing = true;
+    lastPos = getPos(e);
+
+    currentPath = {
+        color: isEraser ? 'eraser' : penColor,
+        size: penSize,
+        points: [lastPos]
+    };
+
+    e.preventDefault();
+}
+
+// Continue the current path while the pointer moves. Draws immediately
+// to the user canvas for low-latency feedback.
+function draw(e) {
+    if (!drawing) return;
+
+    const pos = getPos(e);
+    currentPath.points.push(pos);
+    // draw to userCanvas only
+    if (isEraser) {
+        uctx.globalCompositeOperation = 'destination-out';
+        uctx.strokeStyle = 'rgba(0,0,0,1)';
+    } else {
+        uctx.globalCompositeOperation = 'source-over';
+        uctx.strokeStyle = penColor;
+    }
+    uctx.lineWidth = penSize;
+    uctx.lineCap = "round";
+    uctx.lineJoin = "round";
+
+    uctx.beginPath();
+    uctx.moveTo(lastPos.x, lastPos.y);
+    uctx.lineTo(pos.x, pos.y);
+    uctx.stroke();
+
+    lastPos = pos;
+}
+
+// Finish the current drawing path and store it in history.
+function stopDraw() {
+    if (drawing && currentPath) userPaths.push(currentPath);
+    drawing = false;
+    currentPath = null;
+    // redraw to ensure user layer is consistent (useful after push)
+    drawCanvas();
+}
+
+// Pointer/touch events for drawing. Bound to the top user canvas
+// so user input doesn't alter the guide canvas beneath.
+// (Eraser mode uses compositing to remove pixels from the user layer.)
+// Events (attach to userCanvas so eraser doesn't affect guide layer)
+userCanvas.addEventListener("mousedown", startDraw);
+userCanvas.addEventListener("mousemove", draw);
+userCanvas.addEventListener("mouseup", stopDraw);
+userCanvas.addEventListener("mouseleave", stopDraw);
+userCanvas.addEventListener("touchstart", startDraw, { passive: false });
+userCanvas.addEventListener("touchmove", draw, { passive: false });
+userCanvas.addEventListener("touchend", stopDraw);
+
+// Pen controls
+// Color buttons (select pen color)
+document.querySelectorAll(".colorBtn").forEach(btn => {
+    btn.addEventListener("click", () => {
+        penColor = btn.dataset.color;
+        // turn off eraser if active
+        if (isEraser) {
+            isEraser = false;
+            const eb = document.getElementById('eraserBtn');
+            if (eb) eb.classList.remove('active');
+            if (eb) eb.setAttribute('aria-pressed', 'false');
+        }
+        updatePenIndicator();
+    });
+});
+
+// Undo button — removes the last user stroke from history.
+const undoBtn = document.getElementById('undoBtn');
+if (undoBtn) undoBtn.addEventListener('click', () => { if (userPaths.length > 0) userPaths.pop(); drawCanvas(); });
+
+// Eraser toggle — switches drawing mode to "erase" using destination-out
+// compositing on the user canvas.
+const eraserBtn = document.getElementById('eraserBtn');
+if (eraserBtn) eraserBtn.addEventListener('click', () => {
+    isEraser = !isEraser;
+    eraserBtn.classList.toggle('active', isEraser);
+    eraserBtn.setAttribute('aria-pressed', String(isEraser));
+    updatePenIndicator();
+});
+
+// Pen size control — updates `penSize` and visual indicator.
+const sizeSelect = document.getElementById('sizeSelect');
+if (sizeSelect) {
+    penSize = parseInt(sizeSelect.value);
+    sizeSelect.addEventListener('change', (e) => { penSize = parseInt(e.target.value); updatePenIndicator(); });
+}
+
+// On-canvas cursor indicator: follows pointer and reflects current pen size/color.
+const cursor = document.getElementById('cursorIndicator');
+function moveCursorAtEvent(e) {
+    if (!cursor) return;
+    const pos = getPos(e);
+    cursor.style.left = pos.x + 'px';
+    cursor.style.top = pos.y + 'px';
+    cursor.style.display = 'block';
+}
+
+userCanvas.addEventListener('mousemove', moveCursorAtEvent);
+userCanvas.addEventListener('mouseenter', () => { if (cursor) cursor.style.display = 'block'; });
+userCanvas.addEventListener('mouseleave', () => { if (cursor) cursor.style.display = 'none'; });
+userCanvas.addEventListener('touchmove', (e) => { moveCursorAtEvent(e.touches ? e.touches[0] : e); }, { passive: true });
+
+// Update cursor appearance when pen changes
+// Update the floating cursor appearance to match `penSize` and `penColor`.
+function updateCursorAppearance() {
+    if (!cursor) return;
+    const size = Math.max(12, penSize) * 2;
+    cursor.style.width = size + 'px';
+    cursor.style.height = size + 'px';
+    if (isEraser) {
+        cursor.classList.add('eraser');
+        cursor.style.background = 'transparent';
+    } else {
+        cursor.classList.remove('eraser');
+        // map simple named colors to usable backgrounds
+        const colorMap = { red: '#ff4d6d', blue: '#4da6ff', black: '#333' };
+        cursor.style.background = colorMap[penColor] || penColor;
+    }
+}
+
+// Hook into the pen indicator update flow so both the UI indicator
+// and the on-canvas cursor are kept in sync whenever pen properties change.
+const _oldUpdatePenIndicator = updatePenIndicator;
+updatePenIndicator = function() {
+    _oldUpdatePenIndicator();
+    updateCursorAppearance();
+};
+
+// Letter slider: updates the displayed letter and previews.
+function updateLetter() {
+    const entry = letters[currentIndex];
+    // support standard two-char entries like "Aa" or four-char digraph entries like "Ngng"
+    const big = entry.length === 4 ? entry.slice(0,2) : entry[0];
+    const small = entry.length === 4 ? entry.slice(2) : entry[1];
+
+    document.getElementById("letter").innerHTML =
+        `<span>${big}</span><span class="small-letter">${small}</span>`;
+
+    const prevIndex = (currentIndex - 1 + letters.length) % letters.length;
+    const nextIndex = (currentIndex + 1) % letters.length;
+
+    const prevEntry = letters[prevIndex];
+    const prevBig = prevEntry.length === 4 ? prevEntry.slice(0,2) : prevEntry[0];
+    const prevSmall = prevEntry.length === 4 ? prevEntry.slice(2) : prevEntry[1];
+    document.getElementById("previewLeft").innerHTML = `<span>${prevBig}</span><span class="small-letter">${prevSmall}</span>`;
+
+    const nextEntry = letters[nextIndex];
+    const nextBig = nextEntry.length === 4 ? nextEntry.slice(0,2) : nextEntry[0];
+    const nextSmall = nextEntry.length === 4 ? nextEntry.slice(2) : nextEntry[1];
+    document.getElementById("previewRight").innerHTML = `<span>${nextBig}</span><span class="small-letter">${nextSmall}</span>`;
+
+    drawCanvas();
+}
+
+// Pen indicator updater — updates the small circular UI indicator
+// to show the current color or eraser state.
+function updatePenIndicator() {
+    const pi = document.getElementById('penIndicator');
+    if (!pi) return;
+    if (isEraser) {
+        pi.classList.add('eraser');
+        pi.textContent = '🧽';
+        pi.style.background = '';
+    } else {
+        pi.classList.remove('eraser');
+        pi.textContent = '';
+        // set color; handle named colors
+        pi.style.background = penColor;
+    }
+    // scale indicator slightly with pen size
+    const scale = Math.min(1.6, Math.max(0.7, penSize / 12));
+    pi.style.transform = `scale(${scale})`;
+}
+
+// Hover-driven navigation arrows — advancing letters while hovered.
+let rightHover, leftHover;
+
+document.getElementById("rightArrow").addEventListener("mouseenter", () => {
+    rightHover = setInterval(() => {
+        currentIndex = (currentIndex + 1) % letters.length;
+        updateLetter();
+    }, 500);
+});
+document.getElementById("rightArrow").addEventListener("mouseleave", () => {
+    clearInterval(rightHover);
+});
+
+document.getElementById("leftArrow").addEventListener("mouseenter", () => {
+    leftHover = setInterval(() => {
+        currentIndex = (currentIndex - 1 + letters.length) % letters.length;
+        updateLetter();
+    }, 500);
+});
+document.getElementById("leftArrow").addEventListener("mouseleave", () => {
+    clearInterval(leftHover);
+});
+
+// Clear & Save
+document.getElementById("clearBtn").addEventListener("click", () => {
+    userPaths = [];
+    drawCanvas();
+});
+
+document.getElementById("saveBtn").addEventListener("click", () => {
+    // Save the userCanvas content only (preserves eraser effect and excludes guide letters)
+    const tempCanvas = document.createElement("canvas");
+    tempCanvas.width = userCanvas.width;
+    tempCanvas.height = userCanvas.height;
+    const tctx = tempCanvas.getContext("2d");
+    // Optional white background
+    tctx.fillStyle = "white";
+    tctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+    tctx.drawImage(userCanvas, 0, 0);
+
+    const link = document.createElement("a");
+    link.download = "tracing.png";
+    link.href = tempCanvas.toDataURL();
+    link.click();
+
+    alert("MAGALING!");
+});
+</script>
+
+<script>
+// All-letters overlay: populate grid and handlers
+const allGridOverlay = document.createElement('div');
+allGridOverlay.id = 'allGridOverlay';
+allGridOverlay.className = 'all-grid-overlay';
+allGridOverlay.setAttribute('aria-hidden','true');
+allGridOverlay.innerHTML = `
+    <div class="all-grid-wrap" style="width:100%;max-width:1200px;">
+        <div class="all-overlay-top"><button id="allBackBtn" class="action-btn back-button">Back</button></div>
+        <div class="all-grid" id="allGrid"></div>
+    </div>
+`;
+document.body.appendChild(allGridOverlay);
+
+function entryParts(entry){
+    if(!entry) return {big:'', small:''};
+    if(entry.length===4) return { big: entry.slice(0,2), small: entry.slice(2) };
+    return { big: entry[0], small: entry[1] };
+}
+
+function populateAllGrid(){
+    const grid = document.getElementById('allGrid');
+    grid.innerHTML = '';
+    letters.forEach((entry, idx) => {
+        const parts = entryParts(entry);
+        const tile = document.createElement('div');
+        tile.className = 'letter-tile';
+        tile.setAttribute('data-idx', idx);
+        tile.innerHTML = `<div class="big">${parts.big}</div><div class="small">${parts.small}</div>`;
+        tile.addEventListener('click', ()=>{
+            currentIndex = idx;
+            updateLetter();
+            hideAllGrid();
+            // smooth scroll to top of canvas area
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        grid.appendChild(tile);
+    });
+}
+
+function showAllGrid(){
+    populateAllGrid();
+    allGridOverlay.classList.add('open');
+    allGridOverlay.setAttribute('aria-hidden','false');
+}
+function hideAllGrid(){
+    allGridOverlay.classList.remove('open');
+    allGridOverlay.setAttribute('aria-hidden','true');
+}
+
+document.getElementById('showAllBtn').addEventListener('click', showAllGrid);
+document.getElementById('allBackBtn').addEventListener('click', hideAllGrid);
+
+// Init
+updateLetter();
+updatePenIndicator();
+</script>
+</script>
+
+<!-- site guide removed -->
+</body>
+</html>

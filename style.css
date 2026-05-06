@@ -1,0 +1,153 @@
+/* Import kid-friendly Google Fonts and define typographic tokens */
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;700&family=Nunito:wght@300;400;700&display=swap');
+
+:root {
+    --font-heading: 'Fredoka', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    --font-body: 'Nunito', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    --base-size: 20px; /* larger for younger kids/readability */
+    --line-height: 1.5;
+    --muted: #6b6b6b;
+}
+
+/* General body styles (readability-focused) */
+html { font-size: var(--base-size); }
+body {
+    font-family: var(--font-body);
+    font-weight: 400;
+    line-height: var(--line-height);
+    letter-spacing: 0.2px;
+    text-align: center;
+    margin-top: 50px;
+    background-color: #f9fafb;
+    color: #222;
+    position: relative;
+}
+
+/* ALPABETO link */
+h1 a {
+    color: #333;
+    text-decoration: none;
+    font-size: 2.6rem;
+    transition: color 0.3s;
+    font-family: var(--font-heading);
+}
+h1 a:hover {
+    color: #007BFF;
+    cursor: pointer;
+}
+
+/* General h1 styling */
+h1 {
+    color: #333;
+    font-size: 2.2rem;
+    margin-top: 48px;
+    font-family: var(--font-heading);
+    font-weight: 700;
+}
+
+/* Return buttons */
+.return-btn {
+    display: inline-block;
+    padding: 14px 28px;
+    background-color: #28a745;
+    color: white;
+    font-size: 1.05rem;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: background-color 0.3s, transform 0.3s;
+    font-family: var(--font-heading);
+}
+.return-btn:hover {
+    background-color: #1e7e34;
+    transform: scale(1.05);
+    cursor: pointer;
+}
+
+/* Top-left button */
+.return-btn.top-left {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 16px;
+    padding: 10px 20px;
+}
+
+/* Grid container for next.html */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    gap: 24px;
+    justify-content: center;
+    margin-top: 36px;
+}
+
+/* Squares */
+.square {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #007BFF;
+    color: white;
+    text-decoration: none;
+    border-radius: 12px;
+    font-size: 1.15rem;
+    transition: transform 0.26s cubic-bezier(.2,.9,.2,1), background-color 0.22s;
+    font-family: var(--font-heading);
+    box-sizing: border-box;
+    padding: 18px;
+    color: #ffffff;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.35);
+}
+.square.large {
+    width: 460px;
+    height: 200px;
+    font-size: 1.9rem;
+    padding: 22px 26px;
+}
+.square.large:hover {
+    transform: scale(1.1);
+    background-color: #0056b3;
+}
+.square.small {
+    width: 420px;
+    height: 170px;
+    font-size: 1.5rem;
+}
+.square.small:hover {
+    transform: scale(1.05);
+    background-color: #0056b3;
+}
+
+/* -------- Design 1 Styles (Letter & Day Dropdown) -------- */
+
+/* Day dropdown below return button */
+.day-container {
+    position: absolute;
+    top: 70px;
+    left: 20px;
+    z-index: 1000;
+}
+
+#day-select {
+    padding: 10px 15px;
+    font-size: 16px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+
+/* Letter display */
+.letter-display {
+    font-size: 8rem;
+    font-weight: 700;
+    margin-top: 120px;
+    cursor: pointer;
+    color: #007BFF;
+    transition: transform 0.18s, color 0.18s;
+    font-family: var(--font-heading);
+}
+
+.letter-display:hover {
+    transform: scale(1.1);
+    color: #0056b3;
+}
