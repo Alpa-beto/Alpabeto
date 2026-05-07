@@ -276,6 +276,17 @@ header.header-nav {
     background-color: aquamarine;
 }
 
+/* Overlay plain playing/open state */
+#overlay.openPlain, #overlay.playing {
+    background-image: none !important;
+    background-color: rgba(255,159,128,0.95); /* soft coral to match theme */
+    transition: background-color 0.25s ease;
+}
+
+#overlay.playing .letter-large { filter: drop-shadow(0 8px 24px rgba(0,0,0,0.5)); }
+
+/* overlay side image removed — leave slide side image untouched */
+
 #overlay .letter-large {
     font-size: 25vw;               
     color:white;                   
@@ -375,7 +386,10 @@ audioContainer.style.display = "none";
 letters.forEach(letter => {
     const audio = document.createElement("audio");
     audio.id = `audio-${letter.toLowerCase()}`;
-    audio.src = `${letter.toLowerCase()}.mp3`;
+    // use normalized lowercase filenames
+    const key = letter.toLowerCase();
+    const filenameMap = { 'ng': 'ng.mp3', 'ñ': 'ntilde.mp3' };
+    audio.src = filenameMap[key] || `${key}.mp3`;
     audioContainer.appendChild(audio);
 });
 document.body.appendChild(audioContainer);
@@ -416,25 +430,40 @@ function showSlide(idx){
 function openOverlay(idx){
     const data = slidesData[idx];
     currentAudio = document.getElementById("audio-" + data.sound);
-    if(window.setPlayingElement) window.clearPlaying();
+    if(window.clearPlaying) window.clearPlaying();
     largeLetter.textContent = data.letter;
-    overlay.style.backgroundImage = `url('sounds/${data.letter}.jpg')`;
+    // Keep overlay plain and leave the slide side image untouched
+    overlay.style.backgroundImage = 'none';
+    overlay.classList.add('openPlain');
     overlay.style.display = "flex";
 }
 
 /* Overlay controls */
 playBtn.onclick = () => {
-    if(currentAudio){
-        if(window.setPlayingElement) window.setPlayingElement(largeLetter);
+    if (!currentAudio) return;
+    if (currentAudio.paused) {
         currentAudio.currentTime = 0;
-        currentAudio.play().catch(() => {});
-        if(window.setCurrentlyPlaying) window.setCurrentlyPlaying(currentAudio);
-        const clear = () => { if(window.clearPlaying) window.clearPlaying(); };
+        currentAudio.play().then(() => {
+            overlay.classList.add('playing');
+            playBtn.textContent = '⏸ Pause';
+            if(window.setCurrentlyPlaying) window.setCurrentlyPlaying(currentAudio);
+        }).catch(() => {});
+        const clear = () => {
+            overlay.classList.remove('playing');
+            playBtn.textContent = '🔊 Play Sound';
+            if(window.clearPlaying) window.clearPlaying();
+        };
         currentAudio.addEventListener('ended', clear, { once: true });
         currentAudio.addEventListener('pause', clear, { once: true });
+    } else {
+        currentAudio.pause();
+        overlay.classList.remove('playing');
+        playBtn.textContent = '🔊 Play Sound';
     }
 };
-backBtn.onclick = () => overlay.style.display = "none";
+backBtn.onclick = () => {
+    overlay.style.display = "none";
+};
 
 /* Arrows */
 document.querySelector(".arrow-left").onclick = () => { showSlide((currentIndex-1+slidesData.length)%slidesData.length); };
