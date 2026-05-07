@@ -21,9 +21,9 @@ body {
     0% { background-position: 0% 50%; }
     25% { background-position: 50% 100%; }
     50% { background-position: 100% 50%; }
-    75% { background-position: 50% 0%; }
     100% { background-position: 0% 50%; }
 }
+
 
 /* --------- Header (Accessible, larger targets for kids) --------- */
 header.header-nav {
@@ -245,13 +245,13 @@ header.header-nav {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    background-color: aquamarine;
+    background-color: #7fffd4;
 }
 
 /* Overlay playing state: plain theme color (overrides image) */
 #overlay.playing {
     background-image: none !important;
-    background-color: rgba(255,159,128,0.95); /* soft coral from the theme (#FF9F80) */
+    background-color: #7fffd4; /* soft coral from the theme (#FF9F80) */
     transition: background-color 0.25s ease;
 }
 
@@ -279,7 +279,7 @@ header.header-nav {
     z-index:3;
 }
 
-#overlay button:hover { background-color:#FF6B6B; }
+#overlay button:hover { background-color:#6bfff8; }
 
 /* All-letters overlay for titik */
 .all-grid-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; display: none; align-items: center; justify-content: center; z-index: 1200; padding: 12px; background: linear-gradient(135deg, rgba(255,222,233,0.92), rgba(181,255,252,0.88)); backdrop-filter: blur(6px); }
@@ -336,6 +336,7 @@ header.header-nav {
     <button id="play-sound">🔊 Play Sound</button>
     <button id="back-btn" aria-label="Back">⬅</button>
 </div>
+
 
 <script>
 // Alphabet with Filipino additions: Ñ and Ng placed after N
@@ -412,8 +413,8 @@ function openOverlay(idx){
     currentAudio = document.getElementById("audio-" + data.sound);
     if(window.clearPlaying) window.clearPlaying();
     largeLetter.textContent = data.letter;
-    // Use the slide's side image for the overlay background (keeps paths consistent)
-    overlay.style.backgroundImage = `url('${data.sideImg}')`;
+    // Keep overlay plain and leave the slide side image untouched
+    overlay.style.backgroundImage = 'none';
     overlay.style.display = "flex";
 }
 
@@ -444,7 +445,9 @@ playBtn.onclick = () => {
         playBtn.textContent = '🔊 Play Sound';
     }
 };
-backBtn.onclick = () => overlay.style.display = "none";
+backBtn.onclick = () => {
+    overlay.style.display = "none";
+};
 
 /* Arrows */
 document.querySelector(".arrow-left").onclick = () => { showSlide((currentIndex-1+slidesData.length)%slidesData.length); };
