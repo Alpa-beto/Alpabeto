@@ -221,52 +221,35 @@ body {
         font-size:18px;
     }
 }
-/* Preview button and popup */
-.preview-btn {
+/* Game button (top-left, same sizing as trace button) */
+.game-btn {
     display: flex;
     align-items: center;
     justify-content: center;
     position: fixed;
-    bottom: 20px;
-    left: 20px;
-    width: 150px;
-    height: 56px;
-    background: #FFB86B;
+    top: 18px;
+    left: 18px;
+    width: 96px;
+    height: 96px;
+    background: #FFD166; /* soft game accent */
     color: white;
-    font-size: 18px;
-    font-weight: 700;
+    font-size: 22px;
+    font-weight: bold;
     text-decoration: none;
-    border-radius: 20px;
-    box-shadow: 0 10px 26px rgba(0,0,0,0.18);
-    transition: transform 0.18s ease, background 0.18s;
-    z-index: 10000;
-    border: 3px solid rgba(255,255,255,0.14);
+    border-radius: 28px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.28);
+    transition: transform 0.22s ease, background 0.22s;
+    z-index: 10;
+    border: 3px solid rgba(255,255,255,0.12);
 }
-.preview-btn:hover, .preview-btn:focus {
-    transform: translateY(-6px) scale(1.02);
-    background: #FF9B3D;
+.game-btn i { font-size: 32px; }
+.game-btn:hover {
+    background: #FFC44A;
+    transform: scale(1.06);
 }
-
-.preview-popup {
-    position: fixed;
-    bottom: 90px;
-    left: 20px;
-    width: 380px;
-    height: 240px;
-    border-radius: 12px;
-    overflow: hidden;
-    background: #ffffff;
-    box-shadow: 0 18px 40px rgba(0,0,0,0.25);
-    border: 6px solid rgba(255,255,255,0.9);
-    display: none;
-    z-index: 10001;
-}
-.preview-popup.visible { display: block; }
-.preview-popup iframe { width:100%; height:100%; border:0; }
 
 @media(max-width:480px){
-    .preview-popup { left: 8px; right: 8px; width: auto; height: 200px; }
-    .preview-btn { left: 8px; width: 130px; }
+    .game-btn { left: 8px; width:86px; height:86px; font-size:18px; }
 }
 
 /* site guide removed */
@@ -304,53 +287,13 @@ body {
 <!-- Confetti canvas (full-viewport, pointer-events disabled) -->
 <canvas id="confetti-canvas" aria-hidden="true" style="position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:9999;"></canvas>
 
-<!-- Preview Button (opens external site in new tab) -->
+<!-- Game Button (top-left) -->
 <a href="https://alpabetocbar.my.canva.site/maglaro?fbclid=IwZXh0bgNhZW0CMTAAYnJpZBExT1R5RUhCNFFNeDRlTE9GUnNydGMGYXBwX2lkEDIyMjAzOTE3ODgyMDA4OTIAAR7CoyPFu0IH2th2Pb2vqZxivhGHRXyGW731xeGllSbq7qVq-Wh6XARiUPBMTQ_aem_U6mXb9PRYHEEigfwzCYcKA"
-   class="preview-btn" target="_blank" rel="noreferrer noopener" aria-haspopup="dialog" aria-controls="preview-popup">Preview Site</a>
-
-<!-- Preview Popup (hidden until hover) -->
-<div id="preview-popup" class="preview-popup" role="dialog" aria-label="Site preview">
-    <iframe id="preview-iframe" src="" title="Site preview"></iframe>
-</div>
+   class="game-btn" target="_blank" rel="noreferrer noopener" title="Play">
+    <i class="fas fa-gamepad" aria-hidden="true"></i>
+    <span class="sr-only">Play</span>
+</a>
 
 <script src="script.js"></script>
-
-<script>
-// Hover preview logic
-(function(){
-    var PREVIEW_URL = 'https://alpabetocbar.my.canva.site/maglaro?fbclid=IwZXh0bgNhZW0CMTAAYnJpZBExT1R5RUhCNFFNeDRlTE9GUnNydGMGYXBwX2lkEDIyMjAzOTE3ODgyMDA4OTIAAR7CoyPFu0IH2th2Pb2vqZxivhGHRXyGW731xeGllSbq7qVq-Wh6XARiUPBMTQ_aem_U6mXb9PRYHEEigfwzCYcKA';
-    var btn = document.querySelector('.preview-btn');
-    var popup = document.getElementById('preview-popup');
-    var iframe = document.getElementById('preview-iframe');
-    var hideTimer = null;
-
-    function showPreview(){
-        if (!iframe.src) iframe.src = PREVIEW_URL;
-        popup.classList.add('visible');
-    }
-    function hidePreview(){
-        popup.classList.remove('visible');
-    }
-
-    btn.addEventListener('pointerenter', function(){
-        clearTimeout(hideTimer);
-        showPreview();
-    });
-    btn.addEventListener('pointerleave', function(){
-        hideTimer = setTimeout(hidePreview, 300);
-    });
-    popup.addEventListener('pointerenter', function(){
-        clearTimeout(hideTimer);
-    });
-    popup.addEventListener('pointerleave', function(){
-        hideTimer = setTimeout(hidePreview, 300);
-    });
-
-    // keyboard accessibility
-    btn.addEventListener('focus', showPreview);
-    btn.addEventListener('blur', hidePreview);
-    // click already opens in new tab via target="_blank"
-})();
-</script>
 </body>
 </html>
